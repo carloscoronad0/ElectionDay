@@ -4,15 +4,15 @@ Transform:
 
 Description: Election Day project
 Resources:
-# ELECTION OFFICIALS ------------------------------------------------------------------------
+# ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
 
-# PARTICIPANTS ------------------------------------------------------------------------------
+# ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
-# ELECTION RESULTS --------------------------------------------------------------------------
+# ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
 
-# INVALIDATIONS -----------------------------------------------------------------------------
+# ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
 
-# TABLE -------------------------------------------------------------------------------------
+# TABLE ---------------------------------------------------------------------------------------------
   ElectionDayTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -30,3 +30,15 @@ Resources:
             AttributeType: S
           - AttributeName: sk
             AttributeType: S
+            
+# API Gateway ---------------------------------------------------------------------------------------
+  ElectionDayAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: election-day-api
+      StageName: prod
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: swagger.yaml
