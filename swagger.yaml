@@ -1,3 +1,56 @@
 openapi: 3.0.0
 
 paths:
+  /cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate:
+    put:
+      summary: This endpoint saves an invalid booth into de database
+      parameters:
+        - name: city_id
+          in: path
+          required: true
+          description: City unique Id
+        - name: school_id
+          in: path
+          required: true
+          description: School unique Id
+        - name: booth_id
+          in: path
+          required: true
+          description: Booth unique Id
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:invalidateBooth/invocations"
+        httpMethod: "POST"
+        
+  /invalids:
+    get:
+      summary: This endpoint returns all the invalid booths across the country
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:showInvalidBooths/invocations"
+        httpMethod: "POST"
+        
+  /invalids/cities:
+    get:
+      summary: This endpoint returns all the invalid booths across the country by city
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:showInvalidBoothsByCity/invocations"
+        httpMethod: "POST"
+        
+  /invalids/cities/{city_id}/schools:
+    get:
+      summary: This endpoint returns all the invalid booths by school across a given city
+      parameters:
+        - name: city_id
+          in: path
+          required: true
+          description: City unique Id
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:showInvalidBoothsBySchool/invocations"
+        httpMethod: "POST"

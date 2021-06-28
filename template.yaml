@@ -12,6 +12,90 @@ Resources:
 
 # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
 
+  InvalidateBooth:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: invalidateBooth
+      Handler: Invalidations.invalidateBooth
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        Invalidate:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate"
+            Method: PUT
+
+  ShowInvalidBooths:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: showInvalidBooths
+      Handler: Invalidations.showInvalidBooths
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/invalids"
+            Method: GET
+            
+  ShowInvalidBoothsByCity:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: showInvalidBoothsByCity
+      Handler: Invalidations.showInvalidBoothsByCity
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/invalids/cities"
+            Method: GET
+            
+  ShowInvalidBoothsBySchool:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: showInvalidBoothsBySchool
+      Handler: Invalidations.showInvalidBoothsBySchool
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/invalids/cities/{city_id}/schools"
+            Method: GET
+
 # TABLE ---------------------------------------------------------------------------------------------
   ElectionDayTable:
       Type: AWS::DynamoDB::Table

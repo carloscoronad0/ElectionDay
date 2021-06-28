@@ -1,5 +1,5 @@
 #!/bin/bash
-DEPLOYMENT_BUCKET="election-day-bucket"
+DEPLOYMENT_BUCKET="lambda-cloudformation-lab"
 STACK_NAME="election-day-stack"
 
 while getopts ":bdp" OPTION; do
