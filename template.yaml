@@ -30,7 +30,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ElectionDayAPI
-            Path: "/cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate"
+            Path: "/booths/{booth_id}/invalidate"
             Method: PUT
 
   ShowInvalidBooths:
