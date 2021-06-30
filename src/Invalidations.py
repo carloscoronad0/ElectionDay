@@ -40,7 +40,8 @@ def invalidateBooth(event, context):
                         'pk': { 'S': newPkPut },
                         'sk': { 'S': booth_id },
                         'school': { 'S': school }
-                    }
+                    },
+                    'ReturnValuesOnConditionCheckFailure': 'ALL_OLD'
                 }
             },
             {
@@ -56,7 +57,8 @@ def invalidateBooth(event, context):
                     },
                     'ExpressionAttributeValues': {
                       ':val': { 'N': val }
-                    }
+                    },
+                    'ReturnValuesOnConditionCheckFailure': 'ALL_OLD'
                 }
             }
         ]
@@ -64,7 +66,7 @@ def invalidateBooth(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(f"Invalidated booth {booth_id}")
+        'body': json.dumps(response)
     }
     
 def showInvalidBooths(event, context):
@@ -72,35 +74,34 @@ def showInvalidBooths(event, context):
         KeyConditionExpression = Key('pk').eq('CityReg')
     )
     
-    cities_items= cities['Items']
-    
-    invalids = []
-    for eachcity in cities_items:
-        aux = 'Inv_' + eachcity['id']
-        temp = table.query(
-            KeyConditionExpression = Key('pk').eq(aux)
+    invalid_booths = []
+    for eachcity in cities['Items']:
+        pkQuery = f"Inv_{eachcity['id']}"
+        invalids = table.query(
+            KeyConditionExpression = Key('pk').eq(pkQuery)
         )
-        invalids.extend(temp['Items'])
+        invalid_booths.extend(invalids['Items'])
         
-    booths = []
-    for eachbooth in invalids:
-        temp = table.get_item(
+    booths_info = []
+    for eachbooth in invalid_booths:
+        info = table.get_item(
             Key = {
                 'pk': 'Sch_' + eachbooth['school'],
                 'sk': eachbooth['sk']
             }
         )
         item = {
-            "booth_id": temp['Item']['sk'],
-            "registered": str(temp['Item']['registered']),
-            "missing": str(temp['Item']['missing']),
-            "voted": str(temp['Item']['voted'])
+            "booth_id": info['Item']['sk'],
+            "school_id": eachbooth['school'],
+            "registered": str(info['Item']['registered']),
+            "missing": str(info['Item']['missing']),
+            "voted": str(info['Item']['voted'])
         }
-        booths.append(item)
+        booths_info.append(item)
     
     return {
         'statusCode': 200,
-        'body': json.dumps(booths)
+        'body': json.dumps(booths_info)
     }
     
 def showInvalidBoothsByCity(event, context):
@@ -110,25 +111,25 @@ def showInvalidBoothsByCity(event, context):
     
     cities_items= cities['Items']
     
-    invalids = []
+    city_invalids = []
     for eachcity in cities_items:
-        aux = 'Inv_' + eachcity['id']
-        temp = table.query(
-            KeyConditionExpression = Key('pk').eq(aux)
+        pkQuery = 'Inv_' + eachcity['id']
+        invalids = table.query(
+            KeyConditionExpression = Key('pk').eq(pkQuery)
         )
         item={
             "city_id": eachcity['id'],
             "city_name": eachcity['sk'],
-            "invalids_count": str(temp['Count'])
+            "invalids_count": str(invalids['Count'])
         }
-        invalids.append(item)
+        city_invalids.append(item)
     
-    invalids.sort(reverse=True, key=criteria)
+    city_invalids.sort(reverse=True, key=criteria)
     
-    print(json.dumps(invalids))
+    print(json.dumps(city_invalids))
     return {
         'statusCode': 200,
-        'body': json.dumps(invalids)
+        'body': json.dumps(city_invalids)
     }
     
 def showInvalidBoothsBySchool(event, context):
@@ -143,31 +144,31 @@ def showInvalidBoothsBySchool(event, context):
         KeyConditionExpression = Key('pk').eq(aux)
     )
     
-    invalids = []
+    school_invalids = []
     for eachschool in schools['Items']:
-        invCity = f"Inv_{city_id}"
-        temp = eachschool['sk']
-        booths = table.query(
-            KeyConditionExpression = Key('pk').eq(invCity),
+        pkQuery = f"Inv_{city_id}"
+        school_id = eachschool['sk']
+        invalids = table.query(
+            KeyConditionExpression = Key('pk').eq(pkQuery),
             FilterExpression = "school = :sch",
             ExpressionAttributeValues={
-                ':sch': temp
+                ':sch': school_id
             }
         )
         
         item={
             "school_id": eachschool['sk'],
             "city_id": city_id,
-            "invalids_count": str(temp['Count'])
+            "invalids_count": str(invalids['Count'])
         }
-        invalids.append(item)
+        school_invalids.append(item)
         
-    invalids.sort(reverse=True, key=criteria)
+    school_invalids.sort(reverse=True, key=criteria)
     
-    print(json.dumps(invalids))
+    print(json.dumps(school_invalids))
     return {
         'statusCode': 200,
-        'body': json.dumps(invalids)
+        'body': json.dumps(school_invalids)
     }
     
 def criteria(e):
