@@ -8,18 +8,21 @@ paths:
 # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
 
 # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
-  /cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate:
+  /booths/{booth_id}/invalidate:
     put:
       summary: This endpoint saves an invalid booth into de database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: string
+                school_id:
+                  type: string
       parameters:
-        - name: city_id
-          in: path
-          required: true
-          description: City unique Id
-        - name: school_id
-          in: path
-          required: true
-          description: School unique Id
         - name: booth_id
           in: path
           required: true
