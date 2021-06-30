@@ -4,13 +4,116 @@ Transform:
 
 Description: Election Day project
 Resources:
-# ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
+  # ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
 
-# ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
+  # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------ 
 
-# ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
-
-# ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
+  # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
+  CalculateResults:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: putCalculateResults
+      Handler: ElectionResults.putCalculateResults
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/results"
+            Method: PUT
+            
+  NationwideResults:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getNationwideResults
+      Handler: ElectionResults.getNationwideResults
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/results/nationwide"
+            Method: GET
+            
+  CityResults:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getCityResults
+      Handler: ElectionResults.getCityResults
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/results/cities/{citie_id}"
+            Method: GET
+            
+  SchoolResults:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:  getSchoolResults
+      Handler: ElectionResults.getSchoolResults
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/results/schools/{school_id}"
+            Method: GET
+  
+  PersonPlace:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getPersonPlace
+      Handler: ElectionResults.getPersonPlace
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/persons/{person_id}/verify"
+            Method: GET
+  # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
 
   InvalidateBooth:
     Type: AWS::Serverless::Function
@@ -32,7 +135,7 @@ Resources:
             RestApiId: !Ref ElectionDayAPI
             Path: "/cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate"
             Method: PUT
-
+            
   ShowInvalidBooths:
     Type: AWS::Serverless::Function
     Properties:
@@ -96,7 +199,7 @@ Resources:
             Path: "/invalids/cities/{city_id}/schools"
             Method: GET
 
-# TABLE ---------------------------------------------------------------------------------------------
+  # TABLE ---------------------------------------------------------------------------------------------
   ElectionDayTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -115,7 +218,7 @@ Resources:
           - AttributeName: sk
             AttributeType: S
             
-# API Gateway ---------------------------------------------------------------------------------------
+  # API Gateway ---------------------------------------------------------------------------------------
   ElectionDayAPI:
     Type: AWS::Serverless::Api
     Properties:
