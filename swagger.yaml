@@ -5,6 +5,45 @@ paths:
 
   # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
+  # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
+
+  /persons/{person_id}/register:
+    put:
+      summary: This endpoint register participants on the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                time:
+                  type: string
+                name:
+                  type: string
+                lastname:
+                  type: string
+                booth:
+                  type: string
+                school:
+                  type: string
+                city:
+                  type: string
+                vote:
+                  type: string
+                
+      parameters:
+        - name: person_id
+          in: path
+          required: true
+          description: Person unique id
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:registerparticipant/invocations"
+        httpMethod: "POST"
+# ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
+
   # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
   /results:
     put:
@@ -52,18 +91,21 @@ paths:
         httpMethod: "POST"
           
 # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
-  /cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate:
+  /booths/{booth_id}/invalidate:
     put:
       summary: This endpoint saves an invalid booth into de database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: string
+                school_id:
+                  type: string
       parameters:
-        - name: city_id
-          in: path
-          required: true
-          description: City unique Id
-        - name: school_id
-          in: path
-          required: true
-          description: School unique Id
         - name: booth_id
           in: path
           required: true

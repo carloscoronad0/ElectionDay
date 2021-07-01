@@ -115,6 +115,10 @@ Resources:
             Method: GET
   # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
 
+  # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
+
+  # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
+
   InvalidateBooth:
     Type: AWS::Serverless::Function
     Properties:
@@ -125,6 +129,8 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref ElectionDayTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
       Environment:
         Variables:
           ELECTIONDAY_TABLE: !Ref ElectionDayTable 
@@ -133,7 +139,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ElectionDayAPI
-            Path: "/cities/{city_id}/schools/{school_id}/booths/{booth_id}/invalidate"
+            Path: "/booths/{booth_id}/invalidate"
             Method: PUT
             
   ShowInvalidBooths:
