@@ -3,6 +3,40 @@ openapi: 3.0.0
 paths:
 # ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
 
+  /booths/{booth_id}/registerResult:
+    put:
+      summary: This endpoint verify official booth 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booth:
+                  type: string
+                city:
+                  type: string
+                missing:
+                  type: string
+                link:
+                  type: string
+                vote:
+                  type: string
+                yes:
+                  type: string
+                no:
+                  type: string
+      parameters:
+        - name: booth_id
+          in: path
+          required: true
+          description: Person unique id
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:officialbooth/invocations"
+        httpMethod: "POST"
 # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
   /persons/{person_id}/register:
