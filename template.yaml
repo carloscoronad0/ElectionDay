@@ -8,6 +8,29 @@ Resources:
 
 # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
+  RegisterParticipant:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: registerparticipant
+      Handler: Participants.registerparticipant
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ElectionDayTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        Invalidate:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/persons/{person_id}/register"
+            Method: PUT
+
 # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
 
 # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
