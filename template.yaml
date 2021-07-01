@@ -6,7 +6,7 @@ Description: Election Day project
 Resources:
 # ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
 
-  RegisterParticipant:
+  RegisterOfficial:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: officialbooth
