@@ -1,4 +1,5 @@
 #!/bin/bash
+
 DEPLOYMENT_BUCKET="electionday-gpp-bucket"
 STACK_NAME="election-day-stack"
 

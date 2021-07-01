@@ -1,7 +1,11 @@
 openapi: 3.0.0
 
 paths:
-# ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
+  # ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
+
+  # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
+
+  # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
   /booths/{booth_id}/registerResult:
     put:
@@ -76,6 +80,52 @@ paths:
         httpMethod: "POST"
 # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
 
+  # ED-03 : ELECTION RESULTS --------------------------------------------------------------------------
+  /results:
+    put:
+      summary: This endpoint calculate the results
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:putCalculateResults/invocations"
+        httpMethod: "POST"
+  
+  /results/nationwide:
+    get:
+      summary:  This endpoint returns the results by nationwide
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getNationwideResults/invocations"
+        httpMethod: "POST"
+  
+  /results/cities/{citie_id}:
+    get:
+      summary:  This endpoint returns the results by city
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getCityResults/invocations"
+        httpMethod: "POST"  
+        
+  /results/schools/{school_id}:
+    get:
+      summary: This endpoint returns the results by school
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getSchoolResults/invocations"
+        httpMethod: "POST"
+        
+  /persons/{person_id}/verify:
+    get:
+      summary: This endpoint returns the place where the client vote 
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:getPersonPlace/invocations"
+        httpMethod: "POST"
+          
 # ED-04 : INVALIDATIONS -----------------------------------------------------------------------------
   /booths/{booth_id}/invalidate:
     put:
