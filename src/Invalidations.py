@@ -25,17 +25,22 @@ def invalidateBooth(event, context):
         }
     )
     
+    print(invalid_booth)
+    
     newPkPut = 'Inv_' + body['city_id']
     newPkUpdate = 'Av_' + body['city_id']
     school = body['school_id']
     
     val = str(invalid_booth['Item']['missing'])
+    valvot = str(invalid_booth['Item']['voted'])
+    valy = str(invalid_booth['Item']['yes'])
+    valn = str(invalid_booth['Item']['no'])
     
     response = client.transact_write_items(
         TransactItems=[
             {
                 'Put': {
-                    'TableName': 'election-day-table',
+                    'TableName': electionDay_table,
                     'Item': {
                         'pk': { 'S': newPkPut },
                         'sk': { 'S': booth_id },
@@ -46,17 +51,46 @@ def invalidateBooth(event, context):
             },
             {
                 'Update': {
-                    'TableName': 'election-day-table',
+                    'TableName': electionDay_table,
                     'Key': {
                         'pk': { 'S': newPkUpdate },
                         'sk': { 'S': school }
                     },
-                    'UpdateExpression': 'SET #miss = #miss - :val',
+                    'UpdateExpression': 'SET #miss = #miss - :val1, #vot = #vot - :val2, #y = #y - :val3, #n = #n - :val4',
                     'ExpressionAttributeNames': {
-                        '#miss': 'missing'
+                        '#miss': 'missing',
+                        '#vot': 'voted',
+                        '#y': 'yes',
+                        '#n': 'no'
                     },
                     'ExpressionAttributeValues': {
-                      ':val': { 'N': val }
+                      ':val1': { 'N': val },
+                      ':val2': { 'N': valvot },
+                      ':val3': { 'N': valy },
+                      ':val4': { 'N': valn }
+                    },
+                    'ReturnValuesOnConditionCheckFailure': 'ALL_OLD'
+                }
+            },
+            {
+                'Update': {
+                    'TableName': electionDay_table,
+                    'Key': {
+                        'pk': { 'S': 'Nat_wide' },
+                        'sk': { 'S': 'Bolivia' }
+                    },
+                    'UpdateExpression': 'SET #miss = #miss - :val1, #vot = #vot - :val2, #y = #y - :val3, #n = #n - :val4',
+                    'ExpressionAttributeNames': {
+                        '#miss': 'missing',
+                        '#vot': 'voted',
+                        '#y': 'yes',
+                        '#n': 'no'
+                    },
+                    'ExpressionAttributeValues': {
+                      ':val1': { 'N': val },
+                      ':val2': { 'N': valvot },
+                      ':val3': { 'N': valy },
+                      ':val4': { 'N': valn }
                     },
                     'ReturnValuesOnConditionCheckFailure': 'ALL_OLD'
                 }
