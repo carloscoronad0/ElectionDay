@@ -128,3 +128,33 @@ Resources:
           Name: AWS::Include
           Parameters:
             Location: swagger.yaml
+            
+# S3 Bucket -----------------------------------------------------------------------------------------
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: election-day-bucket
+      
+# Funtion to Write elements  ------------------------------------------------------------------------
+  LoadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: loadfunction
+      Handler: LoadF.loadData
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref ElectionDayTable
+      Environment:
+        Variables:
+          ELECTIONDAY_BUCKET: !Ref S3Bucket 
+          ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        Invalidate:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ElectionDayAPI
+            Path: "/loadFiles"
+            Method: PUT

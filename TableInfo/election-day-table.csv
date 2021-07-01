@@ -1,0 +1,13 @@
+"pk (S)","sk (S)","missing (N)","no (N)","voted (N)","yes (N)","city (S)","link (S)","registered (N)","id (S)"
+"Av_city_001","sc_222","40","10","40","30",,,,
+"Av_city_001","sc_123","180","80","170","90",,,,
+"Av_city_002","sc_111","90","75","130","55",,,,
+"CityReg","Cochabamba",,,,,,,,"city_002"
+"CityReg","La Paz",,,,,,,,"city_003"
+"CityReg","Tarija",,,,,,,,"city_001"
+"Nat_wide","Bolivia","310","165","340","175",,,,
+"Sch_sc_111","bt_002","60","35","60","25","city_002","ksadaslkdasd","120",
+"Sch_sc_111","bt_001","30","40","70","30","city_002","ksadaslkdasd","100",
+"Sch_sc_123","bt_005","100","30","50","20","city_001","ksadaslkdasd","150",
+"Sch_sc_123","bt_004","80","50","120","70","city_001","ksadaslkdasd","200",
+"Sch_sc_222","bt_007","40","10","40","30","city_001","ksadaslkdasd","80",
