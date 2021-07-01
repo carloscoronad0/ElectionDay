@@ -6,6 +6,29 @@ Description: Election Day project
 Resources:
 # ED-01 : ELECTION OFFICIALS ------------------------------------------------------------------------
 
+  RegisterParticipant:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: officialbooth
+      Handler: ElectionOfficials.officialbooth
+      Runtime: python3.6
+      CodeUri: package/
+      Policies:
+        - DynamoDBWritePolicy:
+           TableName: !Ref ElectionDayTable
+        - DynamoDBReadPolicy:
+           TableName: !Ref ElectionDayTable
+      Environment:
+       Variables:
+         ELECTIONDAY_TABLE: !Ref ElectionDayTable 
+      Events:
+        Invalidate:
+          Type: Api
+          Properties:
+           RestApiId: !Ref ElectionDayAPI
+           Path: "/booths/{booth_id}/registerResult"
+           Method: PUT
+
 # ED-02 : PARTICIPANTS ------------------------------------------------------------------------------
 
   RegisterParticipant:
